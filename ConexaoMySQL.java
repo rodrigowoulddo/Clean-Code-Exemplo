@@ -1,92 +1,93 @@
 package DAO;
-//Classes necessárias para uso de Banco de dados //
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
-
-//Início da classe de conexão//
 public class ConexaoMySQL {
-	public static String status = "Não conectou...";
 
-	// Método Construtor da Classe//
-	public ConexaoMySQL()
-	{}
+	//Estas são credenciais padrões, deve-se mudá-las para as credenciais reais do seu banco
+	public static String ENDERECO_BANCO = "jdbc:mysql://127.0.0.1:3306/db_name";
+	public static String USERNAME = "root";
+	public static String SENHA = "";
 
-	// Método de Conexão//
-	public static Connection getConexaoMySQL(){
-		Connection connection = null; //atributo do tipo Connection
+	/* O método Main() é utilizado para testar a conexão, sem que seja
+	 Necessãrio Rodar a aplicação inteira. */
+	public static void main(String[] args) {
+		String statusDaConexao = null;
+		ConexaoMySQL.EstabelecerConexao(statusDaConexao);
+		System.out.println(statusDaConexao);
+
+	}
+
+	/* Este é o método usado pela aplicação para obter uma instância do
+	 banco de dados MySQL, podendo assim fazer operações DML na base
+	 especificada.
+	 Este método tem como parâmetro uma String que notifica o status da
+	 conexão
+	 caso seja preciso.
+	
+	@return Connection - conexão com o banco Mysql, usada por todos os módulos
+	@param statusDaConexao - variável alterada para o atual estado da conexao com o BD
+
+	  */
+	public static Connection EstabelecerConexao(String statusDaConexao) {
+
+		Connection conexao = null;
+
 		try {
-			// Carregando o JDBC Driver padrão
-			String driverName = "com.mysql.jdbc.Driver";
 
+			String driverName = "com.mysql.jdbc.Driver"; // JDBC Driver padrão
 			Class.forName(driverName);
 
-			//ENDEREÇO DO DB
-			String url = "jdbc:mysql://200.18.65.9:3306/dimensionamento01";
-			//USER DO DB
-			String username = "dimensionamento";  
-			//SENHA
-			String password = "p4ss";
-			
-			connection = DriverManager.getConnection(url, username, password);
-			
-			
-			//Testa sua conexão//  
-			if (connection != null) {
-				status = ("CONECTADO");
-			}
-			else {
-				status = ("NÃO FOI POSSÍVEL CONECTAR");
-			}
-			
-			return connection;
-			
+			// Esta operação pode levar até 6 segundos
+			conexao = DriverManager.getConnection(ENDERECO_BANCO, USERNAME, SENHA);
+
+			if (testarConexao(conexao))
+				statusDaConexao = "Conectado com Sucesso!";
+			else
+				statusDaConexao = "Erro de Autenticação de credenciais no banco de dados";
+
+			return conexao;
+
 		}
-	    catch(Exception e) {
-	    	
-	    	System.out.println("ERRO: Não conectado");
-	    	
-	    	return null;
-	    	
-	    }
+		/* A execao ocorre quando o destido não é alcançado,
+		 ou seja, quando a URL é nula ou quando o endereço é inatingível
+		 (provavelmente porque não há conexão com a rede) */
+		catch (Exception e) {
+
+			statusDaConexao = "Erro de comunicação com o banco de dados";
+
+			return null;
+
+		}
 
 	}
 
-	// Método que retorna o status da sua conexão//
-	public static String statusConection() {
-		return status;
+	private static boolean testarConexao(Connection conexao) {
+
+		if (conexao != null)
+			return true;
+		else
+			return false;
+
 	}
 
-	// Método que fecha sua conexão//
 	public static boolean FecharConexao() {
 
 		try {
-
-			ConexaoMySQL.getConexaoMySQL().close();
-
+			ConexaoMySQL.EstabelecerConexao(null).close();
 			return true;
+
 		} catch (SQLException e) {
 			return false;
 		}
 
 	}
 
-	// Método que reinicia sua conexão//
 	public static Connection ReiniciarConexao() {
 		FecharConexao();
-		return ConexaoMySQL.getConexaoMySQL();
+		return ConexaoMySQL.EstabelecerConexao(null);
 	}
-	
-	
-	public static void main(String[] args)
-	{
-		
-		ConexaoMySQL.getConexaoMySQL();
-		System.out.println(ConexaoMySQL.status);
-		
-		
-	}
-	
 
 }
