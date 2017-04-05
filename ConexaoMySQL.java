@@ -11,22 +11,27 @@ public class ConexaoMySQL {
 	public static String USERNAME = "root";
 	public static String SENHA = "";
 
-	// O método Main() é utilizado para testar a conexão, sem que seja
-	// Necessãrio Rodar a aplicação inteira.
+	/* O método Main() é utilizado para testar a conexão, sem que seja
+	 Necessãrio Rodar a aplicação inteira. */
 	public static void main(String[] args) {
-		String STATUS_DA_CONEXAO = null;
-		ConexaoMySQL.EstabelecerConexao(STATUS_DA_CONEXAO);
-		System.out.println(STATUS_DA_CONEXAO);
+		String statusDaConexao = null;
+		ConexaoMySQL.EstabelecerConexao(statusDaConexao);
+		System.out.println(statusDaConexao);
 
 	}
 
-	// Este é o método usado pela aplicação para obter uma instância do
-	// banco de dados MySQL, podendo assim fazer operações DML na base
-	// especificada.
-	// Este método tem como parâmetro uma String que notifica o status da
-	// conexão
-	// caso seja preciso.
-	public static Connection EstabelecerConexao(String STATUS_DA_CONEXAO) {
+	/* Este é o método usado pela aplicação para obter uma instância do
+	 banco de dados MySQL, podendo assim fazer operações DML na base
+	 especificada.
+	 Este método tem como parâmetro uma String que notifica o status da
+	 conexão
+	 caso seja preciso.
+	
+	@return Connection - conexão com o banco Mysql, usada por todos os módulos
+	@param statusDaConexao - variável alterada para o atual estado da conexao com o BD
+
+	  */
+	public static Connection EstabelecerConexao(String statusDaConexao) {
 
 		Connection conexao = null;
 
@@ -39,19 +44,19 @@ public class ConexaoMySQL {
 			conexao = DriverManager.getConnection(ENDERECO_BANCO, USERNAME, SENHA);
 
 			if (testarConexao(conexao))
-				STATUS_DA_CONEXAO = "Conectado com Sucesso!";
+				statusDaConexao = "Conectado com Sucesso!";
 			else
-				STATUS_DA_CONEXAO = "Erro de Autenticação de credenciais no banco de dados";
+				statusDaConexao = "Erro de Autenticação de credenciais no banco de dados";
 
 			return conexao;
 
 		}
-		// A execao ocorre quando o destido não é alcançado,
-		// ou seja, quando a URL é nula ou quando o endereço é inatingível
-		// (provavelmente porque não há conexão com a rede)
+		/* A execao ocorre quando o destido não é alcançado,
+		 ou seja, quando a URL é nula ou quando o endereço é inatingível
+		 (provavelmente porque não há conexão com a rede) */
 		catch (Exception e) {
 
-			STATUS_DA_CONEXAO = "Erro de comunicação com o banco de dados";
+			statusDaConexao = "Erro de comunicação com o banco de dados";
 
 			return null;
 
